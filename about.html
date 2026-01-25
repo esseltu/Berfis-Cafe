@@ -513,7 +513,7 @@
                     } else {
                         this.cart.push({ ...item, quantity: 1 });
                     }
-                    this.isCartOpen = true;
+                    // this.isCartOpen = true; // Removed per user request to keep cart closed on add
                 },
 
                 updateQuantity(id, change) {
