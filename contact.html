@@ -505,10 +505,21 @@
 
 
                                     <div>
-                                        <label for="address-map" class="block text-sm font-medium text-gray-700">Delivery Location *</label>
-                                        <div id="address-map" class="mt-1 w-full h-64 rounded-md border border-gray-300"></div>
-                                        <input type="hidden" name="Address" id="address" required>
-                                        <p class="mt-1 text-xs text-gray-500">Tap on the map to drop a pin for delivery.</p>
+                                        <label for="address" class="block text-sm font-medium text-gray-700">Delivery Location *</label>
+                                        <div class="mt-1 space-y-3">
+                                            <button type="button"
+                                                    @click="useCurrentLocation"
+                                                    class="w-full inline-flex justify-center items-center rounded-md border border-transparent bg-brand-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                                                <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>
+                                                <span>Deliver to my current location</span>
+                                            </button>
+                                            <p class="text-xs text-gray-500" x-text="currentLocationStatus || 'We use your phone location to share a directions link with the rider.'"></p>
+                                            <div class="flex items-center gap-2">
+                                                <input id="call-for-directions" type="checkbox" x-model="callForDirections" class="h-4 w-4 text-brand-600 border-gray-300 rounded">
+                                                <label for="call-for-directions" class="text-xs text-gray-600">Let the dispatch rider call me for directions instead</label>
+                                            </div>
+                                            <input type="hidden" name="Address" id="address">
+                                        </div>
                                     </div>
 
                                     <div>
@@ -561,6 +572,8 @@
                 isCheckoutOpen: false,
                 map: null,
                 mapMarker: null,
+                currentLocationStatus: '',
+                callForDirections: false,
                 activeCategory: 'Breakfast',
                 categories: ['Breakfast', 'Baskets', 'Catering'],
                 cart: JSON.parse(localStorage.getItem('cart')) || [],
@@ -586,14 +599,48 @@
                     return this.cart.map(item => `${item.name} (x${item.quantity})`).join(', ');
                 },
 
+                useCurrentLocation() {
+                    if (!navigator.geolocation) {
+                        this.currentLocationStatus = 'Location not supported on this device. You can let the rider call you for directions.';
+                        return;
+                    }
+                    this.currentLocationStatus = 'Getting your location...';
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            const coords = lat.toFixed(5) + ',' + lng.toFixed(5);
+                            const input = document.getElementById('address');
+                            if (input) {
+                                input.value = coords;
+                            }
+                            this.currentLocationStatus = 'Location captured. Rider will receive a directions link.';
+                        },
+                        () => {
+                            this.currentLocationStatus = 'Could not get your location. Please allow location access or let the rider call you for directions.';
+                        }
+                    );
+                },
+
                 submitOrder(event) {
                     const form = event.target;
                     const name = form.Name.value;
                     const whatsapp = form.WhatsApp.value;
                     const dateNeeded = form["Date Needed"].value;
                     const address = form.Address.value;
-                    const mapsLink = address ? `https://www.google.com/maps?q=${address}` : "";
                     const special = form["Special Requests"].value;
+
+                    let addressText = '';
+                    if (address) {
+                        const isCoord = address.includes(',');
+                        const mapsLink = isCoord ? `https://www.google.com/maps?q=${address}` : '';
+                        addressText = mapsLink || address;
+                    }
+                    if (this.callForDirections) {
+                        addressText = addressText
+                            ? `${addressText} (Rider should call customer for directions)`
+                            : 'Rider should call customer for directions';
+                    }
 
                     const messageLines = [
                         "New order from Berfis Cafe website",
@@ -601,7 +648,7 @@
                         `Name: ${name}`,
                         `Customer WhatsApp: ${whatsapp}`,
                         `Date Needed: ${dateNeeded}`,
-                        `Address: ${mapsLink || address}`,
+                        addressText ? `Address: ${addressText}` : null,
                         special ? `Special Requests: ${special}` : null,
                         "",
                         `Items: ${this.orderSummaryString}`,
