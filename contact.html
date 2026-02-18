@@ -84,6 +84,12 @@
                 <h1 class="text-xl md:text-2xl font-bold tracking-tight text-gray-900">Berfis Cafe</h1>
             </a>
 
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-700">
+                <a href="index.html" class="hover:text-brand-600">Home</a>
+                <a href="about.html" class="hover:text-brand-600">About</a>
+                <span class="text-brand-600">Contact</span>
+            </nav>
+
             <div class="flex items-center gap-3">
                 <button @click="isCartOpen = true" class="relative p-2 md:p-3 rounded-full hover:bg-gray-100 transition-colors">
                     <i data-lucide="shopping-bag" class="w-6 h-6 md:w-7 md:h-7 text-gray-700"></i>
@@ -92,9 +98,8 @@
                           x-text="cartCount"></span>
                 </button>
 
-                <!-- Mobile & Desktop Menu Button -->
-                <button @click="isMenuOpen = true" class="p-2 -mr-2 text-gray-700 hover:bg-gray-100 rounded-full">
-                    <i data-lucide="menu" class="w-6 h-6 md:w-7 md:h-7"></i>
+                <button @click="isMenuOpen = true" class="p-2 -mr-2 text-gray-700 hover:bg-gray-100 rounded-full md:hidden">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
             </div>
         </div>
