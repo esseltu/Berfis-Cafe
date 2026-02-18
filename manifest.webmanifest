@@ -1,0 +1,20 @@
+{
+  "name": "Berfis Cafe",
+  "short_name": "Berfis Cafe",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ff6b00",
+  "icons": [
+    {
+      "src": "Berfis.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "Berfis.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
