@@ -1,7 +1,7 @@
 {
   "name": "Berfis Cafe",
   "short_name": "Berfis Cafe",
-  "start_url": "/index.html",
+  "start_url": "https://esseltu.github.io/Berfis-Cafe/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ff6b00",
